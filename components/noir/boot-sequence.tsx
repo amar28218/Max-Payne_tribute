@@ -4,19 +4,9 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { cn } from "@/lib/utils"
 import { sfx } from "@/lib/sfx-manager"
 
-/**
- * ===========================================================================
- * EDIT ME — narration lines
- * ===========================================================================
- * These are placeholders. Replace with your own chosen lines — Claude does
- * not generate the game's original script text here (see project plan for
- * why). Keep each line short (under ~90 characters) so the typewriter
- * timing below still reads comfortably on mobile.
- * ===========================================================================
- */
 const BOOT_LINES = [
-  "EDIT_ME: first narration line goes here.",
-  "EDIT_ME: second narration line goes here.",
+  "They were all dead",
+  "The final gunshot was an exclamation mark to everything...",
 ]
 
 type Stage = "idle" | "flash" | "typing" | "glitch" | "done"
@@ -74,7 +64,7 @@ export function BootSequence({ onComplete }: { onComplete: () => void }) {
 
     setStage("flash")
     sfx.play("thunder")
-    sfx.fadeIn("rain", 0.4, 2000)
+    sfx.fadeIn("rain", 0.6, 3000)
 
     // Flash animation runs ~700ms (see .animate-boot-flash), then start typing
     setTimeout(() => setStage("typing"), 750)
