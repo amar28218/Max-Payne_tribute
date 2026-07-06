@@ -29,11 +29,11 @@ function generateRainDrops(count: number): RainDrop[] {
   return Array.from({ length: count }, () => ({
     x: Math.random() * 100,
     y: Math.random() * 100,
-    opacity: 0.15 + Math.random() * 0.4, // 0.15-0.55 (lighter drizzle)
+    opacity: 0.25 + Math.random() * 0.55, // 0.15-0.55 (lighter drizzle)
     thickness: 1 + Math.random(), // 1-2px
-    angle: 70 + Math.random() * 15, // 70-85deg
+    angle: 58 + Math.random() * 12, // 70-85deg
     speed: 2.5 + Math.random() * 2, // animation duration in seconds (slower)
-    height: 18 + Math.random() * 10, // 18-28px (longer streaks)
+    height: 32 + Math.random() * 20, // 18-28px (longer streaks)
     drift: (Math.random() - 0.5) * 0.6, // ±0.3px horizontal drift
     velocity: 1.5 + Math.random() * 2, // 1.5-3.5px per frame (slower fall)
   }))
@@ -60,11 +60,11 @@ export function ParallaxSystem({ performanceMode, stormIntensity = 0 }: Parallax
 
   // Initialize rain drops
   useEffect(() => {
-    const count = performanceMode ? 30 : 100
+    const count = performanceMode ? 50 : 180
     setRainDrops(generateRainDrops(count))
     // Secondary "surge" layer — thinner, faster streaks that fade in only
     // once the story's storm intensity crosses into its heavier second half.
-    const surgeCount = performanceMode ? 15 : 50
+    const surgeCount = performanceMode ? 25 : 80
     setSurgeDrops(generateRainDrops(surgeCount))
   }, [performanceMode])
 
@@ -98,11 +98,11 @@ export function ParallaxSystem({ performanceMode, stormIntensity = 0 }: Parallax
 
   const flicker = useCallback((withShake: boolean) => {
     setLightning(true)
-    setTimeout(() => setLightning(false), 50)
-    setTimeout(() => setLightning(true), 100)
-    setTimeout(() => setLightning(false), 150)
-    setTimeout(() => setLightning(true), 200)
-    setTimeout(() => setLightning(false), 400)
+    setTimeout(() => setLightning(false), 70)
+    setTimeout(() => setLightning(true), 140)
+    setTimeout(() => setLightning(false), 220)
+    setTimeout(() => setLightning(true), 320)
+    setTimeout(() => setLightning(false), 550)
     if (withShake) {
       setStrikeShake(true)
       setTimeout(() => setStrikeShake(false), 500)
@@ -159,7 +159,7 @@ export function ParallaxSystem({ performanceMode, stormIntensity = 0 }: Parallax
   }, [])
 
   const layers = performanceMode ? 2 : 4
-  const rainOpacity = 0.75 + stormIntensity * 0.5 // drizzle -> heavier downpour as the story darkens
+  const rainOpacity = 0.9 + stormIntensity * 0.8 // drizzle -> heavier downpour as the story darkens
   const surgeVisible = stormIntensity > 0.55
 
   return (
@@ -171,10 +171,10 @@ export function ParallaxSystem({ performanceMode, stormIntensity = 0 }: Parallax
     >
       {/* Lightning flash overlay */}
       <div 
-        className={cn(
-          "absolute inset-0 z-50 bg-white/90 transition-opacity duration-75",
-          lightning ? "opacity-100" : "opacity-0"
-        )}
+       className={cn(
+          "absolute inset-0 z-50 bg-blue-100/90 transition-opacity duration-100",
+         lightning ? "opacity-100" : "opacity-0"
+      )}
         style={{ willChange: "opacity" }}
       />
 
@@ -236,7 +236,8 @@ export function ParallaxSystem({ performanceMode, stormIntensity = 0 }: Parallax
                 top: `${drop.y}%`,
                 width: `${drop.thickness}px`,
                 height: `${drop.height}px`,
-                background: `linear-gradient(${drop.angle}deg, transparent, rgba(255, 255, 255, ${drop.opacity}))`,
+                background: `linear-gradient(${drop.angle}deg, transparent, rgba(190, 210, 255, ${drop.opacity}))`,
+                filter: "blur(0.4px)",
                 animationDuration: `${drop.speed * rainSlowFactor}s`,
                 animationDelay: `${Math.random() * 3}s`,
                 transform: `rotate(${90 - drop.angle}deg) translateX(${drop.drift * 10}px)`,
