@@ -430,7 +430,7 @@ export function InteractiveQuote({
     }
   }, [])
 
-  const words = displayText.split(" ")
+  const words = displayText.split(/(\s+)/)
 
   return (
     <section
@@ -464,7 +464,7 @@ export function InteractiveQuote({
           {words.map((word, i) => (
             <span
               key={i}
-              className="inline-block transition-all duration-150"
+              className="inline transition-all duration-150"
               style={{
                 filter: hoveredWordIndex !== null && Math.abs(hoveredWordIndex - i) <= 1 
                   ? "brightness(1.2)" 

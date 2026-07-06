@@ -606,9 +606,7 @@ function Footer() {
             This is an unofficial, non-commercial fan tribute inspired by Max Payne (2001).
             It is not affiliated with, endorsed by, or sponsored by Remedy Entertainment,
             Rockstar Games, or Take-Two Interactive. Max Payne and all related characters,
-            names, and marks are trademarks of their respective owners. All narration,
-            dialogue, and evidence text on this site is original writing created for this
-            tribute, not reproduced from the game.
+            names, and marks are trademarks of their respective owners.
           </p>
         </div>
 
@@ -618,7 +616,7 @@ function Footer() {
             NEW YORK, 1998 — SOME NIGHTS DON'T END WHEN THE SUN COMES UP
           </p>
           <p className="font-mono text-xs text-muted-foreground">
-            Built with rain and determination
+            Built with darkness and determination
           </p>
         </div>
       </div>
