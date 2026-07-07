@@ -9,23 +9,30 @@ interface RippleEffect {
 }
 
 export function NoirCursor() {
-  const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [ghostPosition, setGhostPosition] = useState({ x: 0, y: 0 })
+  const mouseRef = useRef({ x: 0, y: 0 })
+  const ghostRef = useRef({ x: 0, y: 0 })
+
+  const cursorRef = useRef<HTMLDivElement>(null)
+  const dotRef = useRef<HTMLDivElement>(null)
+  const spotlightRef = useRef<HTMLDivElement>(null)
+
+  const rafRef = useRef<number>()
+  const rippleIdRef = useRef(0)
+
   const [isVisible, setIsVisible] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [isOverText, setIsOverText] = useState(false)
   const [ripples, setRipples] = useState<RippleEffect[]>([])
-  const rafRef = useRef<number>()
-  const ghostRef = useRef({ x: 0, y: 0 })
-  const rippleIdRef = useRef(0)
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    setPosition({ x: e.clientX, y: e.clientY })
-    setIsVisible(true)
+    mouseRef.current.x = e.clientX
+    mouseRef.current.y = e.clientY
 
-    // Check what element we're hovering
+    if (!isVisible) setIsVisible(true)
+
     const target = e.target as HTMLElement
-    const isClickable = 
+
+    const isClickable =
       target.tagName === "BUTTON" ||
       target.tagName === "A" ||
       target.closest("button") ||
@@ -39,34 +46,34 @@ export function NoirCursor() {
       target.closest("[data-interactive]") ||
       window.getComputedStyle(target).cursor === "pointer"
 
-    // Check if over paragraph/text content (not clickable)
-    const isText = 
-      (target.tagName === "P" ||
-       target.closest("p") !== null ||
-       target.classList.contains("prose") || 
-       target.closest(".prose")) &&
+    const isText =
+      (
+        target.tagName === "P" ||
+        target.closest("p") ||
+        target.classList.contains("prose") ||
+        target.closest(".prose")
+      ) &&
       !isClickable
 
     setIsHovering(isClickable)
-    setIsOverText(isText)
-  }, [])
+    setIsOverText(Boolean(isText))
+  }, [isVisible])
 
   const handleMouseLeave = useCallback(() => {
     setIsVisible(false)
   }, [])
 
   const handleMouseDown = useCallback((e: MouseEvent) => {
-    // Create ripple effect
-    const newRipple: RippleEffect = {
+    const ripple = {
       id: rippleIdRef.current++,
       x: e.clientX,
       y: e.clientY,
     }
-    setRipples(prev => [...prev, newRipple])
 
-    // Remove ripple after animation completes (350ms)
+    setRipples(prev => [...prev, ripple])
+
     setTimeout(() => {
-      setRipples(prev => prev.filter(r => r.id !== newRipple.id))
+      setRipples(prev => prev.filter(r => r.id !== ripple.id))
     }, 350)
   }, [])
 
@@ -74,45 +81,68 @@ export function NoirCursor() {
     document.addEventListener("mousemove", handleMouseMove)
     document.addEventListener("mouseleave", handleMouseLeave)
     document.addEventListener("mousedown", handleMouseDown)
+
     document.body.style.cursor = "none"
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove)
       document.removeEventListener("mouseleave", handleMouseLeave)
       document.removeEventListener("mousedown", handleMouseDown)
+
       document.body.style.cursor = "auto"
     }
   }, [handleMouseMove, handleMouseLeave, handleMouseDown])
 
-  // Ghost ring follows with 0.12 lerp easing - always catching up, never snapping
   useEffect(() => {
     const animate = () => {
-      ghostRef.current.x += (position.x - ghostRef.current.x) * 0.12
-      ghostRef.current.y += (position.y - ghostRef.current.y) * 0.12
-      setGhostPosition({ x: ghostRef.current.x, y: ghostRef.current.y })
+      ghostRef.current.x +=
+        (mouseRef.current.x - ghostRef.current.x) * 0.18
+
+      ghostRef.current.y +=
+        (mouseRef.current.y - ghostRef.current.y) * 0.18
+
+      if (cursorRef.current) {
+        cursorRef.current.style.transform =
+          `translate3d(${ghostRef.current.x}px, ${ghostRef.current.y}px,0) translate(-50%,-50%)`
+      }
+
+      if (dotRef.current) {
+        dotRef.current.style.transform =
+          `translate3d(${mouseRef.current.x}px, ${mouseRef.current.y}px,0) translate(-50%,-50%)`
+      }
+
+      if (spotlightRef.current) {
+        spotlightRef.current.style.background =
+          `radial-gradient(circle 260px at ${mouseRef.current.x}px ${mouseRef.current.y}px,
+          rgba(255,255,255,0.025) 0%,
+          rgba(255,255,255,0.015) 35%,
+          transparent 75%)`
+      }
+
       rafRef.current = requestAnimationFrame(animate)
     }
+
     rafRef.current = requestAnimationFrame(animate)
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
     }
-  }, [position])
+  }, [])
 
   if (!isVisible) return null
 
   return (
     <>
-      {/* Spotlight effect - radial gradient vignette centered on cursor */}
       <div
-        className="fixed inset-0 pointer-events-none z-[9997] transition-opacity duration-100"
+        ref={spotlightRef}
+        className="fixed inset-0 pointer-events-none z-[9997]"
         style={{
-          background: `radial-gradient(circle 200px at ${position.x}px ${position.y}px, rgba(255,255,255,0.04) 0%, transparent 70%)`,
           mixBlendMode: "overlay",
         }}
       />
 
-      {/* Click ripples - expanding circles that fade out */}
       {ripples.map(ripple => (
         <div
           key={ripple.id}
@@ -120,66 +150,102 @@ export function NoirCursor() {
           style={{
             left: ripple.x,
             top: ripple.y,
-            transform: "translate(-50%, -50%)",
+            transform: "translate(-50%,-50%)",
             animation: "cursor-ripple 350ms ease-out forwards",
           }}
         />
       ))}
 
-      {/* Outer ring - 28px, follows with delay, morphs to 44px red on hover */}
+            {/* Outer Ghost Ring */}
       <div
-        className="fixed pointer-events-none z-[9998]"
+        ref={cursorRef}
+        className="fixed pointer-events-none z-[9998] will-change-transform"
         style={{
-          left: ghostPosition.x,
-          top: ghostPosition.y,
           transform: "translate(-50%, -50%)",
         }}
       >
+        {/* Main Ring */}
         <div
-          className="rounded-full transition-all duration-150 ease-out"
+          className={`absolute rounded-full border transition-all duration-200 ${
+            isHovering ? "border-red-500" : "border-white/70"
+          }`}
           style={{
-            width: isHovering ? 44 : 28,
-            height: isHovering ? 44 : 28,
-            borderWidth: 1,
-            borderStyle: "solid",
-            borderColor: isHovering ? "rgba(200, 30, 30, 0.6)" : "rgba(255, 255, 255, 0.8)",
-            opacity: isOverText ? 0 : 1,
-            transition: "width 150ms ease-out, height 150ms ease-out, border-color 150ms ease-out, opacity 150ms ease-out",
+            width: isHovering ? 44 : isOverText ? 18 : 28,
+            height: isHovering ? 44 : isOverText ? 18 : 28,
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+
+        {/* Soft Pulse */}
+        <div
+          className={`absolute rounded-full border animate-ping ${
+            isHovering ? "border-red-500/30" : "border-white/20"
+          }`}
+          style={{
+            width: isHovering ? 54 : 38,
+            height: isHovering ? 54 : 38,
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            animationDuration: "2s",
+          }}
+        />
+
+        {/* Inner Ring */}
+        <div
+          className={`absolute rounded-full border ${
+            isHovering ? "border-red-400/60" : "border-white/40"
+          }`}
+          style={{
+            width: isHovering ? 14 : 8,
+            height: isHovering ? 14 : 8,
+            left: "50%",
+            top: "50%",
+            transform: "translate(-50%, -50%)",
           }}
         />
       </div>
 
-      {/* Main dot cursor - 8px solid white, snaps exactly to mouse with zero lag */}
+      {/* Main Cursor Dot */}
       <div
-        className="fixed pointer-events-none z-[9999]"
+        ref={dotRef}
+        className="fixed pointer-events-none z-[9999] will-change-transform"
         style={{
-          left: position.x,
-          top: position.y,
           transform: "translate(-50%, -50%)",
         }}
       >
         <div
-          className="rounded-full bg-white"
+          className={`rounded-full transition-all duration-150 ${
+            isHovering ? "bg-red-500" : "bg-white"
+          }`}
           style={{
-            width: 8,
-            height: 8,
+            width: isHovering ? 10 : 8,
+            height: isHovering ? 10 : 8,
           }}
         />
       </div>
 
-      {/* CSS for ripple animation */}
       <style jsx global>{`
         @keyframes cursor-ripple {
           0% {
             width: 10px;
             height: 10px;
             opacity: 0.5;
+            transform: translate(-50%, -50%) scale(1);
           }
+
           100% {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             opacity: 0;
+            transform: translate(-50%, -50%) scale(1.5);
           }
+        }
+
+        * {
+          cursor: none !important;
         }
       `}</style>
     </>
