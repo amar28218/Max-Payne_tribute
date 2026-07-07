@@ -430,7 +430,7 @@ export function InteractiveQuote({
     }
   }, [])
 
-  const words = displayText.split(" ")
+  const words = displayText.split(/(\s+)/)
 
   return (
     <section
@@ -448,8 +448,8 @@ export function InteractiveQuote({
 
         <blockquote
           className={cn(
-            "font-serif text-3xl md:text-5xl leading-tight text-foreground italic cursor-pointer relative",
-            showBurnEffect && "text-white"
+             "font-serif text-3xl md:text-5xl leading-tight text-foreground italic cursor-pointer relative whitespace-pre-wrap",
+              showBurnEffect && "text-white"
           )}
           onClick={handleClick}
           onMouseDown={handleMouseDown}
@@ -461,7 +461,7 @@ export function InteractiveQuote({
             transition: "text-shadow 200ms ease-out",
           }}
         >
-          {words.map((word, i) => (
+          {words.map((part, i) => (
             <span
               key={i}
               className="inline-block transition-all duration-150"
