@@ -689,7 +689,7 @@ export default function NoirCityPage() {
       <StoryBeatTrigger intensity="distant" />
       
       <InteractiveQuote 
-        quote="The rain in this city doesn't wash anything clean. It just makes the blood easier to miss."
+        quote="I don't know about angels, but it's fear that gives men wings."
         author="Max Payne"
       />
 
@@ -699,7 +699,7 @@ export default function NoirCityPage() {
       
       <InteractiveQuote 
         quote="Everybody in this story thinks they're the one telling it. Most of them are wrong."
-        author="The Narrator"
+        author="The Creator"
       />
 
       <DistrictAnchor district="RAGNA ROCK" />
@@ -719,7 +719,7 @@ export default function NoirCityPage() {
       <DistrictAnchor district="THE FINAL NIGHT" />
       
       <InteractiveQuote 
-        quote="I used to think there was a version of this where I got to stop. There isn't. There's just the next name on the list."
+        quote="He was trying to buy more sand for his hourglass. I wasn't selling any."
         author="Max Payne"
       />
       
