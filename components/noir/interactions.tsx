@@ -474,7 +474,7 @@ export function InteractiveQuote({
               onMouseEnter={() => setHoveredWordIndex(i)}
               onMouseLeave={() => setHoveredWordIndex(null)}
             >
-              {word}{i < words.length - 1 ? " " : ""}
+             {part}
             </span>
           ))}
           {isTyping && <span className="animate-pulse">|</span>}
