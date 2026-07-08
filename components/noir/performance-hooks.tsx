@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 export function useDebouncedMouse() {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const lastUpdateRef = useRef(0)
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
   const pendingPositionRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export function useResizeObserver(
 // Scroll progress hook using IntersectionObserver instead of scroll events
 export function useScrollProgress() {
   const [progress, setProgress] = useState(0)
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
   const lastScrollRef = useRef(0)
 
   useEffect(() => {
@@ -217,7 +217,7 @@ export function useTouchGestures(
 
 // RAF-based animation loop
 export function useAnimationLoop(callback: (deltaTime: number) => void, enabled = true) {
-  const rafRef = useRef<number>()
+  const rafRef = useRef<number | undefined>(undefined)
   const lastTimeRef = useRef(0)
 
   useEffect(() => {
