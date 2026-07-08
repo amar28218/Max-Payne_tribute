@@ -21,9 +21,31 @@ const playfairDisplay = Playfair_Display({
 })
 
 export const metadata: Metadata = {
+  // TODO: replace with your actual deployed URL once you have it (e.g. https://your-project.vercel.app)
+  // Without this, some link-preview crawlers (Slack, Discord, LinkedIn) may fail to resolve the OG image.
+  metadataBase: new URL('https://noir-city-tribute.vercel.app'),
   title: 'MAX PAYNE | An Unofficial Fan Tribute',
   description: 'An unofficial, non-commercial fan tribute to Max Payne (2001) — rain, noir, and a very bad night in New York. Not affiliated with Remedy Entertainment or Rockstar Games.',
   generator: 'v0.app',
+  openGraph: {
+    title: 'MAX PAYNE | An Unofficial Fan Tribute',
+    description: 'Rain, noir, and a very bad night in New York. An unofficial fan tribute.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'MAX PAYNE — An Unofficial Fan Tribute',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MAX PAYNE | An Unofficial Fan Tribute',
+    description: 'Rain, noir, and a very bad night in New York. An unofficial fan tribute.',
+    images: ['/og-image.jpg'],
+  },
   icons: {
     icon: [
       {
