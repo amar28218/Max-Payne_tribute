@@ -55,7 +55,7 @@ export function ProceduralAudio({
     gain: GainNode | null
   }>({ oscillator: null, gain: null })
   const chordIndexRef = useRef(0)
-  const jazzIntervalRef = useRef<NodeJS.Timeout>()
+  const jazzIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Create audio context
   const initAudioContext = useCallback(() => {
