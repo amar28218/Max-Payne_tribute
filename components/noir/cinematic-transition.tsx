@@ -32,8 +32,7 @@ export function CinematicTransition({ type, isActive, onComplete }: CinematicTra
       oscillator.type = "square"
       
       gainNode.gain.setValueAtTime(0.3, ctx.currentTime)
-      gainNode.gain.exponentialDecayToValueAtTime?.(0.01, ctx.currentTime + 0.05) 
-        ?? gainNode.gain.setTargetAtTime(0.01, ctx.currentTime, 0.02)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05)
       
       oscillator.start(ctx.currentTime)
       oscillator.stop(ctx.currentTime + 0.05)
@@ -91,12 +90,9 @@ export function CinematicTransition({ type, isActive, onComplete }: CinematicTra
         />
       </div>
 
-      {/* Intensified grain during transition */}
+      {/* Intensified grain during transition — always visible here, since the component returns null entirely when idle */}
       <div 
-        className={cn(
-          "fixed inset-0 pointer-events-none z-[9991] transition-opacity duration-200",
-          phase !== "idle" ? "opacity-100" : "opacity-0"
-        )}
+        className="fixed inset-0 pointer-events-none z-[9991] opacity-100 transition-opacity duration-200"
         style={{
           background: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")",
           opacity: 0.08,
